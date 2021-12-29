@@ -16,11 +16,18 @@ pub struct Place {
     place_type: PlaceType,
 }
 
-pub fn build_empty_place() -> Place {
-    Place {
-        description: String::from("This place is empty"),
-        explored: 0,
-        objects: Vec::new(),
-        place_type: PlaceType::Room,
+impl Place {
+    pub fn new() -> Place {
+        Place {
+            description: String::from("This place is empty"),
+            explored: 0,
+            objects: Vec::new(),
+            place_type: PlaceType::Room,
+        }
+    }
+    pub fn describe(&self) -> String {
+        let descr = self.description.clone();
+        //TODO enhance description with other atttributes
+        descr
     }
 }

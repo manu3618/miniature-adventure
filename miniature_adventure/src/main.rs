@@ -1,7 +1,7 @@
 mod place;
 
 fn main() {
-    let room = place::build_empty_place();
+    let room = place::Place::new();
     println!("Hello, world!");
-    println!("{}", room.description)
+    println!("{}", room.describe())
 }
