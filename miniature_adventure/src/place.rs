@@ -35,9 +35,15 @@ impl Place {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+
     #[test]
-    fn it_works() {
-        let result = 2 + 2;
-        assert_eq!(result, 4);
+    fn place_description() {
+        let place = Place::new();
+        let place = Place {
+            description: String::from(""),
+            ..place
+        };
+        assert_eq!(place.describe(), "");
     }
 }
