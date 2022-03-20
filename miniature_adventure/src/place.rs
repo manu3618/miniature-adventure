@@ -1,11 +1,15 @@
+use std::collections::HashMap;
+
 use uuid::Uuid;
 
+#[derive(Clone)]
 enum PlaceType {
     /// kind of places
     Inside,
     Outside,
 }
 
+#[derive(Clone)]
 pub struct Place {
     /// Place representation
     ///
@@ -17,15 +21,27 @@ pub struct Place {
     exits: Vec<Place>, // link to other places
 }
 
+lazy_static! {
+    static ref ALL_PLACES: HashMap<Uuid, Place> = {
+        //let mut m = HashMap::new();
+        let m = HashMap::new();
+        m
+    };
+}
+
 impl Place {
     pub fn new() -> Place {
-        Place {
-            id: Uuid::new_v4(),
+        let place_id = Uuid::new_v4();
+        let new_place = Place {
+            id: place_id,
             description: String::from("This place is empty."),
             explored: 0,
             place_type: PlaceType::Inside,
             exits: Vec::new(),
-        }
+        };
+
+        // ALL_PLACES.insert(place_id, &mut new_place);
+        return new_place;
     }
     pub fn describe(&self) -> String {
         let mut descr: Vec<&str> = Vec::new();
@@ -59,11 +75,5 @@ mod tests {
     fn place_description_determinism() {
         let place = Place::new();
         assert_eq!(place.describe(), place.describe());
-    }
-    fn self_reference_place() {
-        let place = Place::new();
-        let place_id = place.id;
-
-        // place.exits = [place].to_vec(); // XXX
     }
 }

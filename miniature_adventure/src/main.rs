@@ -1,3 +1,7 @@
+#[macro_use]
+extern crate lazy_static;
+
+mod graph;
 mod place;
 
 fn main() {
