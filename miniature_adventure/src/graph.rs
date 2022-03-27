@@ -27,16 +27,17 @@ impl<T> Node<T> {
         }
     }
     pub fn set_item(&mut self, new_item: T) {
-        *self = match self {
-            Self::None => Self::Node {
-                item: Some(new_item),
-                id: "".to_string(),
-                parents: Box::new(Vec::new()),
-                children: Box::new(Vec::new()),
-            },
+        match self {
+            Self::None => {
+                *self = Self::Node {
+                    item: Some(new_item),
+                    id: "".to_string(),
+                    parents: Box::new(Vec::new()),
+                    children: Box::new(Vec::new()),
+                }
+            }
             Self::Node { item, .. } => {
                 let item = Some(new_item);
-                *self
             }
         }
     }
