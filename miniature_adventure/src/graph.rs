@@ -1,6 +1,17 @@
 /// minimal implementation of directed graphs
 
-enum Node<T> {
+/// Node of a graph.
+///
+/// the node is linked to zero, one, or several parents
+/// the node links to zero, one, or several childs
+use std::any::type_name;
+
+fn type_of<T>(_: T) -> &'static str {
+    type_name::<T>()
+}
+
+#[derive(Debug)]
+enum Node<T: Copy> {
     None,
     Node {
         item: Option<T>,
@@ -10,11 +21,11 @@ enum Node<T> {
     },
 }
 
-impl<T> Node<T> {
+impl<T: Copy> Node<T> {
     pub fn new() -> Self {
         Self::None
     }
-    /// add new node with element
+    /// add new node with an item
     pub fn add_child(&mut self, new_item: T) {
         let mut child = Self::Node {
             item: Some(new_item),
@@ -42,13 +53,16 @@ impl<T> Node<T> {
         }
     }
     /// link to new parent
-    pub fn add_parent(self, parent: Node<T>) {}
-    /// return vector of parents
+    pub fn add_parent(self, parent_node: Node<T>) {}
+    /// returns vector of parents
     pub fn get_parents(self) {}
     pub fn get_item(self) -> Option<T> {
         match self {
             Self::None => None,
-            Self::Node { item, .. } => item,
+            Self::Node { item, .. } => match item {
+                None => None,
+                Some(current_item) => Some(current_item),
+            },
         }
     }
     pub fn set_item(&mut self, new_item: T) {
@@ -62,12 +76,17 @@ impl<T> Node<T> {
                 }
             }
             Self::Node { item, .. } => {
-                let item = Some(new_item);
+                let item = Some(new_item); // XXX
             }
         }
     }
     pub fn iter_children(self) {}
-    pub fn get_children(self) {}
+    pub fn get_children(self) -> Vec<Node<T>> {
+        match self {
+            Self::None => Vec::new(),
+            Self::Node { children, .. } => *children,
+        }
+    }
     fn to_node(self) {}
     fn to_none(&mut self) {
         *self = std::mem::replace(self, Node::None);
@@ -86,5 +105,17 @@ mod tests {
         let mut node: Node<i32> = Node::new();
         node.set_item(3);
         assert_eq!(node.get_item().unwrap(), 3)
+    }
+    fn add_child() {
+        let mut parent: Node<i32> = Node::new();
+        parent.set_item(3);
+        parent.add_child(5);
+        let children = &parent.get_children();
+        let child = &children[0];
+        println!("{}", type_of(child));
+        assert_eq!(1, 2)
+
+        //let content = child.get_item();
+        //assert_eq!(content.unwrap(), 5);
     }
 }
