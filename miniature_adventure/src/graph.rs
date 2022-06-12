@@ -10,8 +10,8 @@ fn type_of<T>(_: T) -> &'static str {
     type_name::<T>()
 }
 
-#[derive(Debug)]
-enum Node<T: Copy> {
+#[derive(Debug, Clone)]
+pub enum Node<T: Copy> {
     None,
     Node {
         item: Option<T>,
@@ -110,12 +110,9 @@ mod tests {
         let mut parent: Node<i32> = Node::new();
         parent.set_item(3);
         parent.add_child(5);
-        let children = &parent.get_children();
+        let children = &parent.clone().get_children();
         let child = &children[0];
-        println!("{}", type_of(child));
-        assert_eq!(1, 2)
-
-        //let content = child.get_item();
-        //assert_eq!(content.unwrap(), 5);
+        let content = child.get_item();
+        assert_eq!(content.unwrap(), 5);
     }
 }
