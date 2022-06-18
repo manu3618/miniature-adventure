@@ -4,14 +4,8 @@
 ///
 /// the node is linked to zero, one, or several parents
 /// the node links to zero, one, or several childs
-use std::any::type_name;
-
-fn type_of<T>(_: T) -> &'static str {
-    type_name::<T>()
-}
-
 #[derive(Debug, Clone)]
-pub enum Node<T: Copy> {
+pub enum Node<T> {
     None,
     Node {
         item: Option<T>,
@@ -21,11 +15,19 @@ pub enum Node<T: Copy> {
     },
 }
 
-impl<T: Copy> Node<T> {
+impl<T> Node<T> {
     pub fn new() -> Self {
         Self::None
     }
-    /// add new node with an item
+    fn new_empty() -> Self {
+        Self::Node {
+            item: None,
+            id: "(empty)".to_string(),
+            parents: Box::new(Vec::new()),
+            children: Box::new(Vec::new()),
+        }
+    }
+    /// add new child to an item
     pub fn add_child(&mut self, new_item: T) {
         let mut child = Self::Node {
             item: Some(new_item),
@@ -35,7 +37,7 @@ impl<T: Copy> Node<T> {
         };
 
         match self {
-            Self::None => {}
+            Self::None => *self = Self::new_empty(),
             Self::Node { id, children, .. } => {
                 let parent_id = id.clone();
                 match child {
@@ -48,12 +50,40 @@ impl<T: Copy> Node<T> {
                         panic!("Child not initialized as expected")
                     }
                 }
-                children.push(child)
+                children.push(child);
             }
         }
     }
-    /// link to new parent
-    pub fn add_parent(self, parent_node: Node<T>) {}
+    /// link to another parent node
+    pub fn add_parent(&mut self, parent_node: &mut Node<T>) {
+        // ensure self is not None
+        match self {
+            Self::None => {
+                *self = Self::new_empty();
+            }
+            Self::Node { .. } => {}
+        }
+        match self {
+            Self::Node {
+                ref mut parents, ..
+            } => {
+                parents.push(*parent_node);
+            }
+            _ => {
+                panic!("current node not initialized")
+            }
+        }
+        match parent_node {
+            Self::None => {
+                panic!("parent node not initialized")
+            }
+            Self::Node {
+                ref mut children, ..
+            } => {
+                children.push(*self);
+            }
+        }
+    }
     /// returns vector of parents
     pub fn get_parents(self) {}
     pub fn get_item(self) -> Option<T> {
@@ -65,6 +95,16 @@ impl<T: Copy> Node<T> {
             },
         }
     }
+    /// Set the item to the node
+    ///
+    /// ```
+    /// new_node  = graph::Node<i32>::new();
+    /// new_node.set_item(-1);
+    /// assert_eq!(new_node.get_item().unwrap(), -1);
+    ///
+    /// new_node.set_item(2);
+    /// assert_eq!(new_node.get_item().unwrap(), 2);
+    /// ```
     pub fn set_item(&mut self, new_item: T) {
         match self {
             Self::None => {
@@ -75,9 +115,7 @@ impl<T: Copy> Node<T> {
                     children: Box::new(Vec::new()),
                 }
             }
-            Self::Node { item, .. } => {
-                let item = Some(new_item); // XXX
-            }
+            Self::Node { item, .. } => *item = Some(new_item),
         }
     }
     pub fn iter_children(self) {}
